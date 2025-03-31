@@ -1,4 +1,4 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 
 
@@ -28,15 +28,15 @@ async def user(id: int):
 async def userQuery(id: int):
     return search_user(id)
 
-@app.post("/user/")
+@app.post("/user/", response_model=User)
 async def create_user(user: User):
     if type(search_user(user.id))==User:
-        print(search_user(user.id))
-        return {"error":"User already exists"}
- 
+       
+        raise HTTPException(status_code=409, detail="User already exists")
+    
     else:
         user_example.append(user)
-        return {"New user created"}
+        raise HTTPException(status_code=201, detail="User created")
 
 @app.put("/user/")
 async def user_update(user: User):
@@ -65,7 +65,7 @@ def search_user(id: int):
     try:
         return list(filtered_user)[0]
     except IndexError:
-        return {"error": "User not found"}
+        raise HTTPException(status_code=404)
     except ValueError:
         return {"error": "Invalid ID format"}
 
