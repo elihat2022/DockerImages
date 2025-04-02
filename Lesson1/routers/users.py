@@ -1,8 +1,8 @@
-from fastapi import FastAPI, HTTPException
+from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
 
 
-app = FastAPI()
+router = APIRouter(tags=["Users"])
 
 class User(BaseModel):
     id: int
@@ -16,29 +16,33 @@ user_example = [User(id=1,name="Elihat", surname="Eli", url="https://eli.com", a
                 User(id=3,name="Sara", surname="Ali", url="https://sara.com", age=22),]
 
 # Path
-@app.get("/users")
+@router.get("/users")
 async def users():
     return user_example
     
-@app.get("/user/{id}")
+@router.get("/user/{id}")
 async def user(id: int):
     return search_user(id)
 
-@app.get("/user/")
+@router.get("/user/")
 async def userQuery(id: int):
     return search_user(id)
 
-@app.post("/user/", response_model=User)
+@router.post("/user/", response_model=User)
 async def create_user(user: User):
-    if type(search_user(user.id))==User:
-       
-        raise HTTPException(status_code=409, detail="User already exists")
-    
-    else:
-        user_example.append(user)
-        raise HTTPException(status_code=201, detail="User created")
+    try:
+        existing_user = search_user(user.id)
+        if isinstance(existing_user, User):
+            raise HTTPException(status_code=409, detail="User already exists")
+    except HTTPException as e:
+        if e.status_code == 404:  # Usuario no encontrado, podemos crearlo
+            user_example.append(user)
+            return user  # Devuelve el usuario creado con código 201 automáticamente
+        else:
+            raise
 
-@app.put("/user/")
+        
+@router.put("/user/")
 async def user_update(user: User):
     for index, user_saved in  enumerate(user_example):
         try: 
@@ -49,7 +53,7 @@ async def user_update(user: User):
             return {"error": "User not found"}
 
 
-@app.delete("/user/")
+@router.delete("/user/")
 def delete_user(id: int):
     user = search_user(id)
     for index, user in enumerate(user_example):
@@ -71,6 +75,3 @@ def search_user(id: int):
 
 
 
-if __name__ == "__main__":
-    import uvicorn
-    uvicorn.run(app, host="0.0.0.0", port=8000)
