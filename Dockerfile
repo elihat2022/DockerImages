@@ -3,6 +3,12 @@ FROM python:3.12-slim
 # Set working directory
 WORKDIR /app
 
+RUN apt-get update && apt-get install -y \
+    libpq-dev \
+    gcc \
+    && rm -rf /var/lib/apt/lists/*
+
+RUN pip install --no-cache-dir --upgrade pip
 # Copy requirements file
 COPY requirements.txt .
 
@@ -15,9 +21,10 @@ COPY . .
 # Set environment variables
 ENV PYTHONPATH=/app
 ENV MONGO="mongodb"
+ENV PORT=8080  
 
 # Expose port for the application
-EXPOSE 8000
+EXPOSE $PORT
 
 # Command to run the application
-CMD ["uvicorn", "Lesson1.main:app", "--host", "0.0.0.0", "--port", "8000"]
+CMD ["uvicorn", "Lesson1.main:app", "--host", "0.0.0.0", "--port", "$PORT"]
