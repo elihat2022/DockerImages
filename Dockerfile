@@ -1,30 +1,35 @@
+# Utiliza una imagen oficial de Python como base
 FROM python:3.12-slim
 
-# Set working directory
+# Establece el directorio de trabajo en /app
 WORKDIR /app
 
+# Instala las dependencias necesarias para compilar algunas bibliotecas de Python
 RUN apt-get update && apt-get install -y \
     libpq-dev \
     gcc \
     && rm -rf /var/lib/apt/lists/*
 
+# Actualiza pip
 RUN pip install --no-cache-dir --upgrade pip
-# Copy requirements file
+
+# Copia el archivo requirements.txt en el directorio de trabajo
 COPY requirements.txt .
 
-# Install dependencies
+# Instala las dependencias de la aplicación
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copy application code
+# Copia el código de la aplicación en el directorio de trabajo
 COPY . .
 
-# Set environment variables
+# Establece la variable de entorno PYTHONPATH
 ENV PYTHONPATH=/app
-ENV MONGO="mongodb"
-ENV PORT=8080  
 
-# Expose port for the application
-EXPOSE $PORT
+# Configura variables de entorno adicionales si es necesario
+# ENV MONGO="mongodb"
 
-# Command to run the application (fixed to properly use environment variable)
-CMD ["sh", "-c", "uvicorn Lesson1.main:app --host 0.0.0.0 --port $PORT"]
+# Expone el puerto para la aplicación (no es necesario especificar el puerto aquí)
+# EXPOSE $PORT
+
+# Comando para ejecutar la aplicación utilizando la variable de entorno PORT
+CMD ["sh", "-c", "uvicorn Lesson1.main:app --host 0.0.0.0 --port ${PORT:-8000}"]

@@ -1,1 +1,0 @@
-web: uvicorn Lesson1.main:app --host 0.0.0.0 --port $PORT
