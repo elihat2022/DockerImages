@@ -32,4 +32,4 @@ ENV MONGO="mongodb"
 EXPOSE 8000
 
 # Comando para ejecutar la aplicación utilizando la variable de entorno PORT
-CMD ["sh", "-c", "cd Lesson1 && uvicorn main:app --host 0.0.0.0 --port ${PORT:-8000}"]
+CMD ["sh", "-c", "cd Lesson1 && python3 -m uvicorn main:app --host 0.0.0.0 --port ${PORT:-8000}"]
