@@ -26,5 +26,5 @@ ENV PORT=8080
 # Expose port for the application
 EXPOSE $PORT
 
-# Command to run the application
-CMD ["uvicorn", "Lesson1.main:app", "--host", "0.0.0.0", "--port", "$PORT"]
+# Command to run the application (fixed to properly use environment variable)
+CMD ["sh", "-c", "uvicorn Lesson1.main:app --host 0.0.0.0 --port $PORT"]
