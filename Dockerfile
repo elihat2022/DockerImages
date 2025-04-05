@@ -23,13 +23,13 @@ RUN pip install --no-cache-dir -r requirements.txt
 COPY . .
 
 # Establece la variable de entorno PYTHONPATH
-ENV PYTHONPATH=/app
+ENV PYTHONPATH=/app/Lesson1
 
 # Configura variables de entorno adicionales si es necesario
-# ENV MONGO="mongodb"
+ENV MONGO="mongodb"
 
 # Expone el puerto para la aplicación (no es necesario especificar el puerto aquí)
-# EXPOSE $PORT
+EXPOSE 8000
 
 # Comando para ejecutar la aplicación utilizando la variable de entorno PORT
-CMD ["sh", "-c", "uvicorn Lesson1.main:app --host 0.0.0.0 --port ${PORT:-8000}"]
+CMD ["sh", "-c", "cd Lesson1 && uvicorn main:app --host 0.0.0.0 --port ${PORT:-8000}"]
